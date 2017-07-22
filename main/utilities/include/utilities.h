@@ -27,6 +27,22 @@ public:
     static bool IsChildWidgetOfAnyLayout(QLayout *layout, QWidget *widget);
 
     static const char * const BoolToString(bool value);
+
+    static std::string QStringToString(QString str);
+
+    static QString StringToQString(std::string str);
+
+    static QString StringToQString(const char * str);
+
+    static bool StringToBoolean(std::string str);
+
+    static bool QStringToBoolean(QString str);
+
+    static std::string ParseCommand(QString str, QString delim, std::string &command);
+
+    static std::vector<std::pair<std::string, std::string>> ParseArguments(QString str, QString argDelim, QString valueDelim);
+
+    static void DumpArgumentsToConsole(std::vector<std::pair<std::string, std::string>> arguments);
 };
 
 template<typename T>

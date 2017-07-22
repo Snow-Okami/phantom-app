@@ -65,8 +65,9 @@
 
 //Custom
 #include "main/utilities/include/utilities.h"
+//Windows
 #include "main/window/include/mainwindow.h"
-
+#include "main/window/include/loginwindow.h"
 
 /*!
     \class QWinWidget qwinwidget.h
@@ -87,12 +88,17 @@
     functionality, and gradually replace the existing interface.
 */
 
-
-QWinWidget::QWinWidget()
+QWinWidget::QWinWidget(WindowType type, const bool resizeAllCorners, const bool preventResize, const int minWidth, const int minHeight, const int maxWidth, const int maxHeight)
     : QWidget(nullptr),
+      resizeAllCorners(resizeAllCorners),
+      preventResize(preventResize),
+      minWidth(minWidth),
+      minHeight(minHeight),
+      maxWidth(maxWidth),
+      maxHeight(maxHeight),
       m_Layout(),
-      p_Widget(nullptr),
-      p_Titlebar(nullptr),
+      p_WindowWidget(nullptr),
+      p_WindowType(type),
       m_ParentNativeWindowHandle(nullptr),
       _prevFocus(nullptr),
       _reenableParent(false)
@@ -105,10 +111,10 @@ QWinWidget::QWinWidget()
         , 1 * window()->devicePixelRatio());
 
 	//If you want to set a minimize size for your app, do so here
-    p_ParentWinNativeWindow->setMinimumSize(250 * window()->devicePixelRatio(), 250 * window()->devicePixelRatio());
+    p_ParentWinNativeWindow->setMinimumSize(minWidth * window()->devicePixelRatio(), minHeight * window()->devicePixelRatio());
 
 	//If you want to set a maximum size for your app, do so here
-    //p_ParentWinNativeWindow->setMaximumSize(1024 * window()->devicePixelRatio(), 768 * window()->devicePixelRatio());
+    p_ParentWinNativeWindow->setMaximumSize(maxWidth * window()->devicePixelRatio(), maxHeight * window()->devicePixelRatio());
 
     //Save the native window handle for shorthand use
     m_ParentNativeWindowHandle = p_ParentWinNativeWindow->hWnd;
@@ -138,55 +144,53 @@ QWinWidget::QWinWidget()
 
     m_Layout.setObjectName("mnLyt");
 
-    //Create the true app widget 
-    p_Widget = new Widget(this);
-    m_Layout.addWidget(p_Widget);
-    p_Widget->setParent(this, Qt::Widget);
-    p_Widget->setVisible(true);
+    //Create the true app widget
+    if(p_WindowType == Main)
+    {
+        p_WindowWidget = new MainWindow(this);
+        p_WindowWidget->setAccessibleName("mainWidget");
+        p_WindowWidget->setObjectName("mnWdgt");
+    }
+    else if(p_WindowType == Login)
+    {
+        p_WindowWidget = new LoginWindow(this);
+        p_WindowWidget->setAccessibleName("loginWidget");
+        p_WindowWidget->setObjectName("lgnWdgt");
+    }
+    else
+    {
+        p_WindowWidget = new WindowBase(this);
+        p_WindowWidget->setAccessibleName("baseWidget");
+        p_WindowWidget->setObjectName("bsWdgt");
+    }
 
-    p_Widget->setAccessibleName("mainWidget");
-    p_Widget->setObjectName("mnWdgt");
-
-    //MainWindow mainWin;
-    //m_Layout.addWidget();
-
-    //Create new title bar
-    //p_Titlebar = new TitleBar(this);
-    //p_Titlebar->Setup();
-
-//    QWindow window = this->window()->p;
-//    window->removeToolBar(p_Titlebar->toolBar);
-//    window->addToolBar(Qt::LeftToolBarArea, p_Titlebar->toolBar);
-//    p_Titlebar->toolbar->show(); //important, because removeToolBar hides it
-//    p_Titlebar->toolBar->a
-
-//    m_Layout.addWidget(p_Titlebar);
-//    p_Titlebar->setParent(this, Qt::Widget);
-//    p_Titlebar->setVisible(true);
+    m_Layout.addWidget(p_WindowWidget);
+    p_WindowWidget->setParent(this, Qt::Widget);
+    p_WindowWidget->setVisible(true);
 
     //Update the BORDERWIDTH value if needed for HiDPI displays
     BORDERWIDTH = BORDERWIDTH * window()->devicePixelRatio(); 
 
 	//Update the TOOLBARHEIGHT value to match the height of toolBar * if needed, the HiDPI display
-    if (p_Widget->toolBar)
+    if (p_WindowWidget->titleWidget)
 	{
-        TOOLBARHEIGHT = p_Widget->toolBar->height() * window()->devicePixelRatio();
+        TOOLBARHEIGHT = p_WindowWidget->titleWidget->height() * window()->devicePixelRatio();
 	}
 
     //You need to keep the native window in sync with the Qt window & children, so wire min/max/close buttons to 
 	//slots inside of QWinWidget. QWinWidget can then talk with the native window as needed 
-    if (p_Widget->minimizeButton)
+    if (p_WindowWidget->minimizeButton)
 	{
-        connect(p_Widget->minimizeButton, &QPushButton::clicked, this, &QWinWidget::onMinimizeButtonClicked);
+        connect(p_WindowWidget->minimizeButton, &QPushButton::clicked, this, &QWinWidget::onMinimizeButtonClicked);
 	}
-    if (p_Widget->maximizeButton)
+    if (p_WindowWidget->maximizeButton)
 	{
-        connect(p_Widget->maximizeButton, &QPushButton::clicked, this, &QWinWidget::onMaximizeButtonClicked);
+        connect(p_WindowWidget->maximizeButton, &QPushButton::clicked, this, &QWinWidget::onMaximizeButtonClicked);
 
 	}
-    if (p_Widget->closeButton)
+    if (p_WindowWidget->closeButton)
 	{
-        connect(p_Widget->closeButton, &QPushButton::clicked, this, &QWinWidget::onCloseButtonClicked);
+        connect(p_WindowWidget->closeButton, &QPushButton::clicked, this, &QWinWidget::onCloseButtonClicked);
 	}	
 
     //Send the parent native window a WM_SIZE message to update the widget size 
@@ -317,10 +321,9 @@ void QWinWidget::onMinimizeButtonClicked()
 //Tell the parent native window to maximize or restore as appropriate
 void QWinWidget::onMaximizeButtonClicked()
 {
-    if (p_Widget->maximizeButton->isChecked())
+    if (p_WindowWidget->maximizeButton->isChecked())
     {
         SendMessage(m_ParentNativeWindowHandle, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-
     }
     else
     {
@@ -382,7 +385,7 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
     //Double check WM_SIZE messages to see if the parent native window is maximized
     if (msg->message == WM_SIZE)
     {
-        if (p_Widget && p_Widget->maximizeButton)
+        if (p_WindowWidget && p_WindowWidget->maximizeButton)
         {
 			//Get the window state
             WINDOWPLACEMENT wp;
@@ -396,24 +399,24 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
             if (wp.showCmd == SW_MAXIMIZE)
             {
                 //Maximize button should show as Restore
-                p_Widget->maximizeButton->setChecked(true);
+                p_WindowWidget->maximizeButton->setChecked(true);
 
                 //Replace Maximize button with Restore Button
-                p_Widget->maximizeButton->setStyleSheet( "#maximizeButton {image: url(:/Restore.png);} #maximizeButton:hover { image: url(:/RestoreHover.png); }" );
-                p_Widget->setGeometry( 8, 8, WindowRect.right - 16, WindowRect.bottom - 16);
+                p_WindowWidget->maximizeButton->setStyleSheet( "#maximizeButton {image: url(:/Restore.png);} #maximizeButton:hover { image: url(:/RestoreHover.png); }" );
+                p_WindowWidget->setGeometry( 8, 8, WindowRect.right - 16, WindowRect.bottom - 16);
 
                 //To prevent maximize to be highlighted after maximizing the window.
-                if (p_Widget->maximizeButton != p_Widget->titleWidget->childAt(p_Widget->titleWidget->mapFromGlobal(QCursor::pos())))
-                    p_Widget->maximizeButton->setAttribute(Qt::WA_UnderMouse, false);
+                if (p_WindowWidget->maximizeButton != p_WindowWidget->titleWidget->childAt(p_WindowWidget->titleWidget->mapFromGlobal(QCursor::pos())))
+                    p_WindowWidget->maximizeButton->setAttribute(Qt::WA_UnderMouse, false);
             }
             else
             {
                 //Maximize button should show as Maximize
-                p_Widget->maximizeButton->setChecked(false);
+                p_WindowWidget->maximizeButton->setChecked(false);
 
                 //Replace Maximize button with Maximize Button
-                p_Widget->maximizeButton->setStyleSheet( "#maximizeButton {image: url(:/Maximize.png);} #maximizeButton:hover { image: url(:/MaximizeHover.png); }" );
-                p_Widget->setGeometry( 0, 0, WindowRect.right, WindowRect.bottom);
+                p_WindowWidget->maximizeButton->setStyleSheet( "#maximizeButton {image: url(:/Maximize.png);} #maximizeButton:hover { image: url(:/MaximizeHover.png); }" );
+                p_WindowWidget->setGeometry( 0, 0, WindowRect.right, WindowRect.bottom);
             }
         }
     }
@@ -430,14 +433,14 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
         //Mouse is over toolbar area
         if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
 		{
-            if(p_Widget->titleWidget)
+            if(p_WindowWidget->titleWidget)
             {
                 //Get current hovered object
                 QWidget *hoveredObj = QApplication::widgetAt(QCursor::pos());
 
                 //If the mouse is over top of the toolbar area BUT is actually positioned over a child widget of the toolbar,
                 //Then we don't want to enable dragging. This allows for buttons in the toolbar, eg, a Maximize button, to keep the mouse interaction
-                if (hoveredObj != p_Widget->titleWidget)
+                if (hoveredObj != p_WindowWidget->titleWidget)
                 {
                     return false;
                 }
@@ -450,48 +453,80 @@ bool QWinWidget::nativeEvent(const QByteArray &, void *message, long *result)
         //Resize Top Left
         else if (x < BORDERWIDTH && y < BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Top Right
         else if (x > WindowRect.right - WindowRect.left - BORDERWIDTH && y < BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
-        //Resize Bottom Right
+        //Resize Bottom Right [[MAIN]]
         else if (x > WindowRect.right - WindowRect.left - BORDERWIDTH && y > WindowRect.bottom - WindowRect.top - BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Bottom Left
         else if (x < BORDERWIDTH && y > WindowRect.bottom - WindowRect.top - BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Left
         else if (x < BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Top
         else if (y < BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Right
         else if (x > WindowRect.right - WindowRect.left - BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
         //Resize Bottom
         else if (y > WindowRect.bottom - WindowRect.top - BORDERWIDTH)
         {
+            //Stop resizing from all corners except bottom left
+            if(!resizeAllCorners || preventResize)
+                return false;
+
             *result = HTTRANSPARENT;
             return true;
         }
@@ -620,22 +655,6 @@ bool QWinWidget::focusNextPrevChild(bool next)
     return true;
 }
 
-//This is a very hacky way, but the only way I have found to force QT to update the toolbar layout area, so it does not shrink
-//Once shrunk, it is no longer possible to drag by the toolbar, meaning you may only drag once before it breaks.
-//This is the ONLY thing that works that is clean and doesn't cause any flicker or other ill effects.
-//The following DO NOT WORK: setGeometry, Update, UpdateGeometry, Show
-void QWinWidget::ForceUpdateToolBarArea()
-{
-    p_Widget->maximizeButton->setChecked(true);
-    p_Widget->maximizeButton->setChecked(false);
-
-    p_Widget->titleWidget->update();
-
-    p_Widget->titleWidget->updateGeometry();
-
-    p_Widget->show();
-}
-
 bool QWinWidget::IsOverToolBarWidget()
 {
     //Get current hovered object
@@ -645,7 +664,7 @@ bool QWinWidget::IsOverToolBarWidget()
     //If a button was detected
     if(hoveredButton != nullptr)
     {
-        if(hoveredButton == p_Widget->maximizeButton || hoveredButton == p_Widget->minimizeButton || hoveredButton == p_Widget->closeButton)
+        if(hoveredButton == p_WindowWidget->maximizeButton || hoveredButton == p_WindowWidget->minimizeButton || hoveredButton == p_WindowWidget->closeButton)
         {
             return true;
         }
@@ -661,12 +680,6 @@ void QWinWidget::moveEvent(QMoveEvent *event)
 
 void QWinWidget::mousePressEvent(QMouseEvent *event)
 {
-//    if ( event->button() == Qt::LeftButton )
-//    {
-//        ReleaseCapture();
-//        SendMessage(m_ParentNativeWindowHandle, WM_NCLBUTTONDOWN, HTCAPTION, 0);
-//    }
-
     //Get positioning vars
     RECT WindowRect;
     int x, y;
@@ -678,6 +691,12 @@ void QWinWidget::mousePressEvent(QMouseEvent *event)
     //Mouse is over toolbar area
     if (x >= BORDERWIDTH && x <= WindowRect.right - WindowRect.left - BORDERWIDTH && y >= BORDERWIDTH && y <= TOOLBARHEIGHT)
     {
+        if(!p_WindowWidget->maximizeButton)
+            return;
+        if(p_WindowWidget->maximizeButton)
+            qDebug("i wasnt null");
+        if(!p_WindowWidget)
+            qDebug("o0p");
         //Maximize on double click
         if (event->type() == QEvent::MouseButtonDblClick)
         {

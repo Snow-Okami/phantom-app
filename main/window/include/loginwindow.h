@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef LOGINWINDOW_H
+#define LOGINWINDOW_H
 
 #include <QWidget>
 #include <QPushButton>
@@ -12,23 +12,31 @@
 #include <QSizePolicy>
 #include <QScrollArea>
 
-#include <QKeyEvent>
+#include <QObject>
 #include <QDebug>
 
+#include <QDesktopServices>
+#include <QtCore/QCommandLineParser>
+#include <QtCore/QCommandLineOption>
+#include <QTimer>
+
+#include <QKeyEvent>
+#include <QEvent>
 //Custom
 #include "main/window/include/windowbase.h"
-#include "ui_main.h"
+#include "ui_login.h"
 
+#include "main/utilities/include/customevents.h"
 //#include "main/sockets/socketengine.h"
 
-class MainWindow : public WindowBase
+class LoginWindow : public WindowBase
 {
     Q_OBJECT
 public:
     //Constructor
-    explicit MainWindow(QWidget *parent = 0);
+    explicit LoginWindow(QWidget *parent = 0);
     //Destructor
-    ~MainWindow();
+    ~LoginWindow();
 
     //Buttons
     QPushButton *minimizeButton = nullptr;
@@ -62,6 +70,9 @@ public:
     void UiSetup();
     void EventSetup();
 
+public:
+    void ReceiveLogin(bool successful, QString response);
+
 protected:
     bool eventFilter(QObject *, QEvent *event) override;
 
@@ -70,10 +81,32 @@ signals:
 
 private slots:
     void On_LoginButton_Clicked();
+    void On_ShowPasswordButton_Clicked();
+    void On_CreateAccount_Clicked();
+    void On_Forgot_Clicked();
+    void On_PasswordLineEdit_Ended();
+    void SendLogin();
+    void LoginFailed();
 
 private:
     //Form - UI
-    Ui::MainWindowForm *ui;
+    Ui::LoginWindowForm *ui;
+
+    QWidget *p_ParentWidget;
+
+    bool loggedIn;
+    bool loginResponseReceived;
+
+//EVENTS
+public:
+    //void postMyCustomEvent(const int customData1, const int customData2);
+
+protected:
+    void customEvent(QEvent *event); // This overrides QObject::customEvent()
+
+private:
+    void HandleLoginResponseEvent(const LoginResponseEvent *event);
+    //void handleMyCustomEvent(const MyCustomEvent *event);
 };
 
-#endif // MAINWINDOW_H
+#endif // LOGINWINDOW_H

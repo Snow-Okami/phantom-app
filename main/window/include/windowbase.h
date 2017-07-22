@@ -1,5 +1,5 @@
-#ifndef WIDGET_H
-#define WIDGET_H
+#ifndef WINDOWBASE_H
+#define WINDOWBASE_H
 
 #include <QWidget>
 #include <QPushButton>
@@ -12,17 +12,20 @@
 #include <QSizePolicy>
 #include <QScrollArea>
 
-#include <QMainWindow>
-#include "ui_main.h"
+#include <QDebug>
+#include <QKeyEvent>
 
-class Widget : public QWidget
+//Custom
+//#include "main/sockets/socketengine.h"
+
+class WindowBase : public QWidget
 {
     Q_OBJECT
 public:
     //Constructor
-    explicit Widget(QWidget *parent = 0);
+    explicit WindowBase(QWidget *parent = 0);
     //Destructor
-    ~Widget();
+    ~WindowBase();
 
     //Buttons
     QPushButton *minimizeButton = nullptr;
@@ -52,16 +55,21 @@ public:
     void TitleBar(QWidget *parent);
     void BackgroundSetup();
     void ConnectSignals();
-    void WidgetSetup();
+    void FormWidgetSetup();
+    void UiSetup();
+    void EventSetup();
+
+protected:
+    bool eventFilter(QObject *, QEvent *event) override;
 
 signals:
-//    bool eventFilter(QObject *, QEvent *event);
+
 
 private slots:
-    void On_LoginButton_Clicked();
+
 
 private:
-    Ui::MainWindowForm *ui;
+    //Form - UI
 };
 
-#endif // WIDGET_H
+#endif // WINDOWBASE_H

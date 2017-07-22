@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets websockets
 
 TARGET = PhantomApp
 TEMPLATE = app
@@ -25,21 +25,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    frameless/src/titlebar.cpp \
-    frameless/src/widget.cpp \
     main/window/src/mainwindow.cpp \
+    main/window/src/loginwindow.cpp \
     main/utilities/src/debug.cpp \
-    main/utilities/src/utilities.cpp
+    main/utilities/src/utilities.cpp \
+    main/window/src/windowbase.cpp \
+    main/sockets/socketengine.cpp
 
 HEADERS += \  
-    frameless/include/titlebar.h \
-    frameless/include/widget.h \
     main/window/include/mainwindow.h \
-    main/utilities/include/utilities.h
+    main/window/include/loginwindow.h \
+    main/utilities/include/utilities.h \
+    main/window/include/windowbase.h \
+    main/sockets/socketengine.h \
+    main/utilities/include/customevents.h
 
 FORMS += \
-    mainwindow.ui \
-    main.ui
+    forms/main.ui \
+    forms/login.ui \
+    forms/update.ui \
+    forms/installation.ui
 
 DISTFILES += \
     themes/desysia.css
@@ -49,7 +54,7 @@ RESOURCES += \
 
 #CONFIG += static
 
-#CONFIG += console
+CONFIG += console
 
 win32 {
     # Only include / compile these files on Windows

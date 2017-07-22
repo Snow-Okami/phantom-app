@@ -55,15 +55,25 @@
 #include <QVBoxLayout>
 #include <QMoveEvent>
 
-#include "frameless/include/widget.h"
-#include "frameless/include/titlebar.h"
 #include "frameless/include/WinNativeWindow.h"
+#include "main/window/include/windowbase.h"
 
 class QWinWidget : public QWidget
 {
     Q_OBJECT
 public:
-    QWinWidget();
+    enum WindowType {
+        Base,
+        Installation,
+        Login,
+        Main,
+        Update
+    };
+
+    //QWinWidget();
+    QWinWidget(WindowType winType, const bool resizeAllCorners = true, const bool preventResize = false, const int minWidth = 720, const int minHeight = 540, const int maxWidth = 1024, const int maxHeight = 768);
+    //QWinWidget(QWinWidget);
+    //QWinWidget(WindowBase &windowWidget) : QWidget(nullptr) {}
     ~QWinWidget();
 
     void show();
@@ -78,7 +88,6 @@ public slots:
     void onMinimizeButtonClicked();
     void onCloseButtonClicked();
 
-    void ForceUpdateToolBarArea();
     bool IsOverToolBarWidget();
 
 protected:
@@ -96,8 +105,8 @@ protected:
 private:
     QVBoxLayout m_Layout;
 
-    Widget* p_Widget;
-    TitleBar* p_Titlebar;
+    WindowBase* p_WindowWidget;
+    WindowType p_WindowType;
 
     WinNativeWindow* p_ParentWinNativeWindow;
     HWND m_ParentNativeWindowHandle;
@@ -110,6 +119,17 @@ private:
 
     void saveFocus();
     void resetFocus();
+
+//OPTIONS
+private:
+    bool resizeAllCorners; //Allow resizing of all corners
+    bool preventResize; //Stops all resizing from happening
+
+    int minWidth = 720;
+    int minHeight = 540;
+
+    int maxWidth = 16777215;
+    int maxHeight = 16777215;
 
 };
 

@@ -1,33 +1,31 @@
-#include "frameless/include/widget.h"
-#include "frameless/include/titlebar.h"
+#include "main/window/include/windowbase.h"
+//We must declare socket engine in the cpp file and not the header to avoid the issue
+//Of circular dependancy
+#include "main/sockets/socketengine.h"
 
-#include "ui_mainwindow.h"
-
-#include <QDebug>
-
-Widget::Widget(QWidget *parent)
-    : QWidget(parent), ui(new Ui::MainWindowForm)
+WindowBase::WindowBase(QWidget *parent)
+    : QWidget(parent)
 {
     //Set up background here (taken care of by CSS style sheet)
-    Widget::BackgroundSetup();
+    BackgroundSetup();
     //Set up titlebar here
-    Widget::TitleBar(parent);
+    TitleBar(parent);
     //We must load the ui form AFTER we set up the title bar
-    ui->setupUi(this); //this loads the ui on this widget
+    UiSetup();
     //Connect up the
     ConnectSignals();
     //Setup any form widgets programmatically
-    Widget::FormWidgetSetup();
-
-    //QApplication::installEventFilter(this);
+    FormWidgetSetup();
+    //Setup event listening
+    EventSetup();
 }
 
-Widget::~Widget()
+WindowBase::~WindowBase()
 {
-    delete ui;
+
 }
 
-void Widget::TitleBar(QWidget *parent)
+void WindowBase::TitleBar(QWidget *parent)
 {
     //Create Title Widget
     titleWidget = new QWidget(this);
@@ -40,7 +38,7 @@ void Widget::TitleBar(QWidget *parent)
     titleLayout->setMargin(0);
 
     // Window title
-    QLabel* titleLabel = new QLabel("Phantom Net");
+    QLabel* titleLabel = new QLabel("");
     titleLabel->setFixedWidth(160);
     titleLabel->setStyleSheet("background-color: none; color: #ffffff; border: none;");
 
@@ -75,11 +73,11 @@ void Widget::TitleBar(QWidget *parent)
     minimizeButton->setFocusPolicy(Qt::NoFocus);
 
     // Maximize
-    maximizeButton = new QPushButton( "", this );
-    maximizeButton->setObjectName( "maximizeButton" );
-    titleLayout->addWidget( maximizeButton );
-    maximizeButton->setFocusPolicy(Qt::NoFocus);
-    maximizeButton->setCheckable(true);
+//    maximizeButton = new QPushButton( "", this );
+//    maximizeButton->setObjectName( "maximizeButton" );
+//    titleLayout->addWidget( maximizeButton );
+//    maximizeButton->setFocusPolicy(Qt::NoFocus);
+//    maximizeButton->setCheckable(true);
 
     //titleLayout Close
     closeButton = new QPushButton( "", this );
@@ -129,59 +127,32 @@ void Widget::TitleBar(QWidget *parent)
     show();
 }
 
-void Widget::BackgroundSetup()
+void WindowBase::BackgroundSetup()
 {
-    //Set a black background for funsies
-    QPalette Pal(palette());
-    QColor desysiaGrey = QColor(38, 38, 41, 255);
-    Pal.setColor(QPalette::Background, desysiaGrey);
-    setAutoFillBackground(true);
-    setPalette(Pal);
+
 }
 
-void Widget::FormWidgetSetup()
+void WindowBase::FormWidgetSetup()
 {
-    ui->mainLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+
 }
 
-//bool Widget::eventFilter(QObject* /*object (Disable C4100 warning from VS compiler)*/, QEvent *event)
-//{
-////    if (event->type() == QEvent::KeyPress)
-////    {
-////        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-////        if(keyEvent->key() == Qt::Key_Return)
-////        {
-////            qDebug() << "Return pressed!";
-////            return true;
-////        }
-////    }
-////    return false;
-//}
-
-//void Widget::ConnectSignals()
-//{
-//    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(slot_buttonPushed_clicked()));
-//    //connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(slot_buttonSetResult_clicked()));
-//}
-
-//void Widget::slot_buttonPushed_clicked()
-//{
-//    //auto child = std::make_unique<TestWindow>(_app, this);
-//    //qDebug() << child->exec();
-//    qDebug("smashed that like button");
-//}
-
-//void Widget::slot_buttonSetResult_clicked()
-//{
-//    //setResult(true);
-//}
-
-void Widget::ConnectSignals()
+void WindowBase::UiSetup()
 {
-    connect(ui->loginBtn, SIGNAL(clicked()), this, SLOT(On_LoginButton_Clicked()));
+
 }
 
-void Widget::On_LoginButton_Clicked()
+void WindowBase::EventSetup()
 {
-    qDebug("Login sent!");
+
+}
+
+bool WindowBase::eventFilter(QObject* /*object (Disable C4100 warning from VS compiler)*/, QEvent *event)
+{
+
+}
+
+void WindowBase::ConnectSignals()
+{
+
 }
