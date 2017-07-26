@@ -1,7 +1,7 @@
 #include "main/window/include/loginwindow.h"
 //We must declare socket engine in the cpp file and not the header to avoid the issue
 //Of circular dependancy
-#include "main/sockets/socketengine.h"
+#include "main/sockets/include/socketengine.h"
 
 LoginWindow::LoginWindow(QWidget *parent)
     : WindowBase(parent),
@@ -185,6 +185,7 @@ void LoginWindow::ConnectSignals()
     connect(ui->passwordInput, SIGNAL(returnPressed()), this, SLOT(SendLogin()));
     connect(ui->createAccountButton, SIGNAL(clicked()), this, SLOT(On_CreateAccount_Clicked()));
     connect(ui->forgotButton, SIGNAL(clicked()), this, SLOT(On_Forgot_Clicked()));
+    //NETWORK
 
     ui->showPasswordButton->setCheckable(true);
 }
@@ -248,9 +249,68 @@ void LoginWindow::SendLogin()
     //ui->verticalLayout->insertWidget(4, response);
 
     ui->loginButton->setText("...Logging in...");
-    SocketEngine::Instance()->SendLogin(ui->emailInput->text(), ui->passwordInput->text());
-    //If login takes longer than threshold, assume login has failed
-    QTimer::singleShot(5000, this, SLOT(LoginFailed()));
+
+//    SocketEngine::Instance()->SendLogin(ui->emailInput->text(), ui->passwordInput->text());
+//    //If login takes longer than threshold, assume login has failed
+//    QTimer::singleShot(5000, this, SLOT(LoginFailed()));
+
+    QJsonObject json;
+    json["username"] = ui->emailInput->text();
+    json["password"] = ui->passwordInput->text();
+    QJsonDocument jsonDoc(json);
+
+    QUrl url("http://localhost:3000/users/authenticate");
+
+    QNetworkRequest request(url);
+
+    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+
+    QByteArray data = jsonDoc.toJson();
+
+    QNetworkAccessManager *manager = new QNetworkAccessManager(this);
+
+    connect(manager, SIGNAL(finished(QNetworkReply *)), this, SLOT(ReplyFinished(QNetworkReply *)));
+
+    //qDebug() << "Sync" << QString::fromUtf8(data.data(), data.size());
+
+    manager->post(request, data);
+}
+
+void LoginWindow::ReplyFinished(QNetworkReply *reply)
+{
+    //Convert response to readable byte array
+    QByteArray bts = reply->readAll();
+    //Convert response to json object we can query again
+    QJsonParseError err;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(bts, &err);
+    //Set up catch vars
+    bool d_success;
+    QString d_token;
+    //Get values from json object
+    if(jsonDoc.isObject())
+    {
+        QJsonObject obj = jsonDoc.object();
+        QJsonValue success = obj.value("success");
+        QJsonValue token = obj.value("token");
+        if (!success.isUndefined()) {
+            if (success.isBool()) {
+                d_success = success.toBool();
+                qDebug() << d_success;
+            }
+        }
+        if (!token.isUndefined()) {
+            if (token.isString()) {
+                d_token = token.toString();
+                qDebug() << d_token;
+            }
+        }
+    }
+    ReceiveLogin(d_success, d_token);
+    //Clean up reply
+    reply->deleteLater();
+    //Full reply
+//    QString strReply(bts);
+//    qDebug() << strReply;
 }
 
 void LoginWindow::LoginFailed()
@@ -262,7 +322,7 @@ void LoginWindow::LoginFailed()
     ui->loginButton->setText("...Login Timed Out!...");
 }
 
-void LoginWindow::ReceiveLogin(bool successful, QString response)
+void LoginWindow::ReceiveLogin(bool successful, QString token)
 {
     loginResponseReceived = true;
 
@@ -272,6 +332,9 @@ void LoginWindow::ReceiveLogin(bool successful, QString response)
     {
         loggedIn = true;
         ui->loginButton->setText("...Logging Successful!...");
+        SocketEngine::Instance()->SetToken(token);
+        SocketEngine::Instance()->Connect();
+
 //        SocketEngine::Instance()->mainWindow->show();
 //        SocketEngine::Instance()->mainWindow->parentWidget()->show();
 //        this->hide();
@@ -282,6 +345,27 @@ void LoginWindow::ReceiveLogin(bool successful, QString response)
         ui->loginButton->setText("...Login Failed!...");
     }
 }
+
+//void LoginWindow::ReceiveLogin(bool successful, QString response)
+//{
+//    loginResponseReceived = true;
+
+//    ui->loginButton->setEnabled(true);
+
+//    if(successful)
+//    {
+//        loggedIn = true;
+//        ui->loginButton->setText("...Logging Successful!...");
+////        SocketEngine::Instance()->mainWindow->show();
+////        SocketEngine::Instance()->mainWindow->parentWidget()->show();
+////        this->hide();
+////        this->parentWidget()->hide();
+//    }
+//    else
+//    {
+//        ui->loginButton->setText("...Login Failed!...");
+//    }
+//}
 
 void LoginWindow::customEvent(QEvent * event)
 {

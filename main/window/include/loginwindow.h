@@ -22,6 +22,12 @@
 
 #include <QKeyEvent>
 #include <QEvent>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+
+#include <QJsonObject>
+#include <QJsonDocument>
 //Custom
 #include "main/window/include/windowbase.h"
 #include "ui_login.h"
@@ -87,6 +93,7 @@ private slots:
     void On_PasswordLineEdit_Ended();
     void SendLogin();
     void LoginFailed();
+    void ReplyFinished(QNetworkReply *reply);
 
 private:
     //Form - UI

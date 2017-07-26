@@ -14,12 +14,16 @@
 
 #include <QKeyEvent>
 #include <QDebug>
+#include <QString>
+#include <QFileDialog>
+#include <QFile>
 
 //Custom
 #include "main/window/include/windowbase.h"
 #include "ui_main.h"
 
 //#include "main/sockets/socketengine.h"
+#include "main/utilities/include/settings.h"
 
 class MainWindow : public WindowBase
 {
@@ -60,7 +64,7 @@ public:
     void ConnectSignals();
     void FormWidgetSetup();
     void UiSetup();
-    void EventSetup();
+    void EventSetup();   
 
 protected:
     bool eventFilter(QObject *, QEvent *event) override;
@@ -69,7 +73,8 @@ signals:
 
 
 private slots:
-    void On_LoginButton_Clicked();
+    void On_InstallButton_Clicked();
+    void On_LocateButton_Clicked();
 
 private:
     //Form - UI

@@ -31,6 +31,7 @@ public:
     }
     //Debugging
     void SetDebug(bool value);
+    void SetToken(QString token);
 
     //Windows instances for event calling
     LoginWindow *loginWindow;
@@ -38,6 +39,7 @@ public:
     WindowBase *windowBase;
 
 public:
+    void Connect();
     void CloseConnection();
     void SendMessage(QString message);
     void SendCommand(QString command, QString message);
@@ -58,6 +60,7 @@ private:
     static SocketEngine *s_instance;
     QWebSocket m_webSocket;
     QUrl m_url;
+    QString m_token;
     bool m_debug;
 
 //EVENTS

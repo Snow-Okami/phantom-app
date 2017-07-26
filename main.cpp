@@ -8,7 +8,9 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCommandLineOption>
-#include "main/sockets/socketengine.h"
+
+#include "main/sockets/include/socketengine.h"
+#include "main/utilities/include/settings.h"
 
 #ifdef _WIN32
 #include "frameless/include/QWinWidget.h"
@@ -48,6 +50,9 @@ int main(int argc, char *argv[])
         app.setStyleSheet( styleSheet );
     }
 
+    //Load Settings
+    Settings::InitializeSettings();
+
 //    MainWindow main;
 //    MainWindow *mainPtr = &main;
 
@@ -63,10 +68,10 @@ int main(int argc, char *argv[])
     l.show();
 
 
-//    QWinWidget m(QWinWidget::Main, false, true, 200, 250, 720, 540);
-//    m.setGeometry(200, 200, 720, 540);
+//    QWinWidget m(QWinWidget::Main, false, true, 370, 290);
+//    m.setGeometry(200, 750, 370, 240);
 
-//    //m.show();
+//    m.show();
 //    m.hide();
 
 //    QWinWidget b(QWinWidget::Base, false, true, 200, 250);

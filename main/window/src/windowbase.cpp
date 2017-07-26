@@ -1,7 +1,7 @@
 #include "main/window/include/windowbase.h"
 //We must declare socket engine in the cpp file and not the header to avoid the issue
 //Of circular dependancy
-#include "main/sockets/socketengine.h"
+#include "main/sockets/include/socketengine.h"
 
 WindowBase::WindowBase(QWidget *parent)
     : QWidget(parent)

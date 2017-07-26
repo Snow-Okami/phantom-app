@@ -1,4 +1,4 @@
-#include "socketengine.h"
+#include "main/sockets/include/socketengine.h"
 
 // Allocating and initializing GlobalClass's
 // static data member.  The pointer is being
@@ -19,7 +19,7 @@ SocketEngine::SocketEngine(const QUrl &url, bool debug, QObject *parent) :
     connect(&m_webSocket, &QWebSocket::connected, this, &SocketEngine::onConnected);
     connect(&m_webSocket, &QWebSocket::disconnected, this, &SocketEngine::onDisconnected);
 
-    m_webSocket.open(QUrl(url));
+    //m_webSocket.open(QUrl(url));
 }
 
 SocketEngine::~SocketEngine()
@@ -28,9 +28,23 @@ SocketEngine::~SocketEngine()
         qDebug() << "SocketEngine Destroyed";
 }
 
+void SocketEngine::Connect()
+{
+    QNetworkRequest request(m_url);
+
+    request.setRawHeader(QString("token").toLocal8Bit(), m_token.toLocal8Bit());
+
+    m_webSocket.open(request);
+}
+
 void SocketEngine::SetDebug(bool value)
 {
     m_debug = value;
+}
+
+void SocketEngine::SetToken(QString token)
+{
+    m_token = token;
 }
 
 void SocketEngine::onConnected()

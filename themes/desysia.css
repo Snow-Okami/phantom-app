@@ -13,6 +13,10 @@
   background: #333333;
 }
 
+#toolbarWidget {
+  background: #ffffff;
+}
+
 #centralWidget {
   background: #333333; /* Window background color */
 }
@@ -68,14 +72,17 @@ QPushButton {
 }
 
 QPushButton:hover {
+    color:#ffffff;
     background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.500273, y2:0, stop:0.215909 rgba(31, 31, 31, 255), stop:1 rgba(41, 41, 41, 255));
 }
 
 QPushButton:focus {
+    color:#cfcfc4;
     background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.500273, y2:0, stop:0.215909 rgba(22, 22, 22, 255), stop:1 rgba(31, 31, 31, 255));
 }
 
 QPushButton:pressed {
+    color:#000000;
     background-color: qlineargradient(spread:pad, x1:0.506, y1:1, x2:0.500273, y2:0, stop:0.215909 rgba(22, 22, 22, 255), stop:1 rgba(32, 32, 32, 255));
 }
 
@@ -196,4 +203,9 @@ QProgressBar::chunk {
 
 QLabel {
     color: #c6c6c6;
+}
+
+QComboBox {
+    color: #c6c6c6;
+    background-color: #474747;
 }

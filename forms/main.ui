@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>720</width>
-    <height>540</height>
+    <width>740</width>
+    <height>580</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
@@ -24,19 +30,53 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>721</width>
-     <height>541</height>
+     <width>742</width>
+     <height>581</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QWidget" name="widget" native="true">
+     <widget class="QWidget" name="toolbarWidget" native="true">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>740</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>40</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: transparent;</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QWidget" name="mainFrameWidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <widget class="QWidget" name="horizontalLayoutWidget">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>721</width>
+         <width>741</width>
          <height>72</height>
         </rect>
        </property>
@@ -54,6 +94,9 @@
             <width>110</width>
             <height>60</height>
            </size>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;</string>
           </property>
           <property name="text">
            <string/>
@@ -93,6 +136,9 @@
             <pointsize>18</pointsize>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;</string>
+          </property>
           <property name="text">
            <string>GAMES</string>
           </property>
@@ -119,6 +165,9 @@
            <font>
             <pointsize>18</pointsize>
            </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;</string>
           </property>
           <property name="text">
            <string>NEWS</string>
@@ -160,6 +209,9 @@
             <pointsize>10</pointsize>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;</string>
+          </property>
           <property name="text">
            <string>${USERNAME}</string>
           </property>
@@ -192,6 +244,9 @@
             <pointsize>8</pointsize>
            </font>
           </property>
+          <property name="styleSheet">
+           <string notr="true">background-color: transparent;</string>
+          </property>
           <property name="text">
            <string>${FRIENDS
 ONLINE
@@ -207,6 +262,19 @@ COUNT}</string>
           </property>
          </widget>
         </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="horizontalLayoutWidget_2">
@@ -214,8 +282,8 @@ COUNT}</string>
         <rect>
          <x>-1</x>
          <y>69</y>
-         <width>721</width>
-         <height>471</height>
+         <width>741</width>
+         <height>461</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -229,6 +297,9 @@ COUNT}</string>
              <width>111</width>
              <height>471</height>
             </rect>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">background-color: transparent;</string>
            </property>
            <property name="widgetResizable">
             <bool>true</bool>
@@ -267,10 +338,12 @@ COUNT}</string>
                   <string/>
                  </property>
                  <property name="icon">
-                  <iconset theme=":/DE_Logo_2">
+                  <iconset theme=":/DE_Logo_1">
                    <normaloff>:/DE_Logo_2</normaloff>
                    <normalon>:/DE_Logo_2</normalon>
-                   <disabledoff>DE_Logo_2</disabledoff>:/DE_Logo_2</iconset>
+                   <disabledoff>DE_Logo_2</disabledoff>
+                   <activeon>:/DE_Logo_1</activeon>
+                   <selectedon>:/DE_Logo_1</selectedon>:/DE_Logo_2</iconset>
                  </property>
                  <property name="iconSize">
                   <size>
@@ -279,6 +352,9 @@ COUNT}</string>
                   </size>
                  </property>
                  <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
                   <bool>false</bool>
                  </property>
                  <property name="autoRepeat">
@@ -312,21 +388,27 @@ COUNT}</string>
             </widget>
            </widget>
           </widget>
-          <widget class="QWidget" name="widget_3" native="true">
+          <widget class="QWidget" name="mainContentWidget" native="true">
            <property name="geometry">
             <rect>
              <x>109</x>
              <y>-1</y>
-             <width>611</width>
+             <width>681</width>
              <height>471</height>
             </rect>
            </property>
-           <widget class="QWidget" name="widget_4" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <widget class="QWidget" name="contentWidget" native="true">
             <property name="geometry">
              <rect>
               <x>30</x>
               <y>30</y>
-              <width>541</width>
+              <width>601</width>
               <height>331</height>
              </rect>
             </property>
@@ -335,9 +417,12 @@ COUNT}</string>
               <rect>
                <x>-1</x>
                <y>-1</y>
-               <width>551</width>
+               <width>601</width>
                <height>331</height>
               </rect>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: transparent;</string>
              </property>
              <property name="widgetResizable">
               <bool>true</bool>
@@ -347,7 +432,7 @@ COUNT}</string>
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>549</width>
+                <width>599</width>
                 <height>329</height>
                </rect>
               </property>
@@ -359,13 +444,13 @@ COUNT}</string>
              <rect>
               <x>-1</x>
               <y>360</y>
-              <width>611</width>
-              <height>111</height>
+              <width>631</width>
+              <height>101</height>
              </rect>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QWidget" name="widget_5" native="true">
+              <widget class="QWidget" name="installWidget" native="true">
                <property name="minimumSize">
                 <size>
                  <width>230</width>
@@ -486,15 +571,21 @@ COUNT}</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLabel" name="locateGameLink">
+                  <widget class="QPushButton" name="locateGameButton">
                    <property name="font">
                     <font>
                      <weight>75</weight>
                      <bold>true</bold>
                     </font>
                    </property>
+                   <property name="styleSheet">
+                    <string notr="true">background-color: transparent;</string>
+                   </property>
                    <property name="text">
                     <string>Locate the game.</string>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
                    </property>
                   </widget>
                  </item>

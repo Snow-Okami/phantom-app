@@ -1,7 +1,7 @@
 #include "main/window/include/mainwindow.h"
 //We must declare socket engine in the cpp file and not the header to avoid the issue
 //Of circular dependancy
-#include "main/sockets/socketengine.h"
+#include "main/sockets/include/socketengine.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : WindowBase(parent),
@@ -142,7 +142,14 @@ void MainWindow::BackgroundSetup()
 void MainWindow::FormWidgetSetup()
 {
     //Makes the label pass mouse events, this avoids the label accidentally consuming events
-    //ui->mainLabel->setAttribute(Qt::WA_TransparentForMouseEvents);
+    ui->toolbarWidget->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->phantomNetMainButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->gamesButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->newsButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->userButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->friendsListButton->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->horizontalSpacer->setAttribute(Qt::WA_TransparentForMouseEvents);
+//    ui->horizontalSpacer_3->setAttribute(Qt::WA_TransparentForMouseEvents);
 }
 
 void MainWindow::UiSetup()
@@ -174,10 +181,20 @@ bool MainWindow::eventFilter(QObject* /*object (Disable C4100 warning from VS co
 
 void MainWindow::ConnectSignals()
 {
-    //connect(ui->loginBtn, SIGNAL(clicked()), this, SLOT(On_LoginButton_Clicked()));
+    connect(ui->installButton, SIGNAL(clicked()), this, SLOT(On_InstallButton_Clicked()));
+    connect(ui->locateGameButton, SIGNAL(clicked()), this, SLOT(On_LocateButton_Clicked()));
 }
 
-void MainWindow::On_LoginButton_Clicked()
+void MainWindow::On_InstallButton_Clicked()
 {
-    qDebug("Login sent!");
+    //qDebug() << Settings::desysiaGameLocationDir;
 }
+
+void MainWindow::On_LocateButton_Clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    Settings::desysiaGameLocationDir = dir;
+    Settings::SaveSettings();
+}
+
+

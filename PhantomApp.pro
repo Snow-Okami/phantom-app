@@ -30,15 +30,17 @@ SOURCES += \
     main/utilities/src/debug.cpp \
     main/utilities/src/utilities.cpp \
     main/window/src/windowbase.cpp \
-    main/sockets/socketengine.cpp
+    main/sockets/src/socketengine.cpp \
+    main/utilities/src/settings.cpp
 
 HEADERS += \  
     main/window/include/mainwindow.h \
     main/window/include/loginwindow.h \
     main/utilities/include/utilities.h \
     main/window/include/windowbase.h \
-    main/sockets/socketengine.h \
-    main/utilities/include/customevents.h
+    main/sockets/include/socketengine.h \
+    main/utilities/include/customevents.h \
+    main/utilities/include/settings.h
 
 FORMS += \
     forms/main.ui \
