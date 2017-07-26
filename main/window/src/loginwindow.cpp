@@ -305,7 +305,9 @@ void LoginWindow::ReplyFinished(QNetworkReply *reply)
             }
         }
     }
+
     ReceiveLogin(d_success, d_token);
+
     //Clean up reply
     reply->deleteLater();
     //Full reply
