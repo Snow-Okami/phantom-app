@@ -64,6 +64,7 @@ void SocketEngine::onDisconnected()
 
 void SocketEngine::onTextMessageReceived(QString message)
 {
+    qDebug() << "Message Received:" << message;
     if (m_debug)
         qDebug() << "Message Received:" << message;
     std::string command;
@@ -114,6 +115,13 @@ void SocketEngine::SendLogin(QString username, QString password)
     //Should we hash the apssword before sending?
     QString loginDetails = QString("%1:%2").arg(username).arg(password);
     SendCommand(QString("login"), loginDetails);
+}
+
+void SocketEngine::SendFriendUser(QString friendname)
+{
+    //Should we hash the apssword before sending?
+    QString loginDetails = QString("friend:%2").arg(friendname);
+    SendCommand(QString("frienduser"), loginDetails);
 }
 
 void SocketEngine::SendLoginResponseEvent(const bool success, const QString response)

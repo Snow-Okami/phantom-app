@@ -45,6 +45,7 @@ public:
     void SendCommand(QString command, QString message);
 
     void SendLogin(QString username, QString password);
+    void SendFriendUser(QString friendname);
 
     void LoginResponse(bool successful, QString response);
 

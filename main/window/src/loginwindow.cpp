@@ -217,8 +217,9 @@ void LoginWindow::On_ShowPasswordButton_Clicked()
 
 void LoginWindow::On_CreateAccount_Clicked()
 {
-    QString link = "http://www.google.com";
-    QDesktopServices::openUrl(QUrl(link));
+//    QString link = "http://www.google.com";
+//    QDesktopServices::openUrl(QUrl(link));
+    SocketEngine::Instance()->SendFriendUser("goon");
 }
 
 void LoginWindow::On_Forgot_Clicked()
